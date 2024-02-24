@@ -11,6 +11,13 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+# Проверка наличия настроенного swap
+if swapon --show | grep -q "NAME"; then
+    echo "swap уже настроен:"
+    swapon --show
+    exit 0
+fi
+
 # Определяем размер свободного места на диске в переменную free_space
 free_space=$(df -BG --output=avail / | sed '1d;s/[^0-9.]*//g')
 swap_size=$(grep SwapTotal /proc/meminfo | awk '{print $2}')
@@ -62,5 +69,17 @@ if [ -z "$(swapon -s | grep /swapfile)" ]; then
    exit 1
 fi
 
+# Функция для удаления скрипта
+self_delete() {
+    read -p "Swap настроен успешно. Удалить скрипт? (y/n): " choice
+    if [ "$choice" = "y" ]; then
+        rm -- "$0"
+        echo "Скрипт удален"
+    fi
+}
+
 # Выводим сообщение об успешном завершении операции с подробностями
 echo -e "${g}Swap-файл размером ${b}$swap_size МБ${e} создан успешно и включен в систему. Для проверки можно выполнить команду '${b}swapon -s${e}'.${e}"
+
+# Вызов функции для удаления скрипта
+self_delete
