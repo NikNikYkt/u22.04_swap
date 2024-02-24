@@ -14,8 +14,8 @@ fi
 # Определяем размер свободного места на диске в переменную free_space
 free_space=$(df -BG --output=avail / | sed '1d;s/[^0-9.]*//g')
 swap_size=$(grep SwapTotal /proc/meminfo | awk '{print $2}')
-echo -e "размер свободного места на диске ${g}$free_space${e}"
-echo -e "размер swap: ${g}$swap_size kB${e}"
+echo -e "размер свободного места на диске (в гигабайтах) ${g}$free_space${e}"
+echo -e "размер swap (в килобайтах): ${g}$swap_size kB${e}"
 
 # Проверяем, что переменная free_space определена
 if [ -z "$free_space" ]; then
